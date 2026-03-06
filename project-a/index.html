@@ -1,0 +1,88 @@
+<!-- 
+Template for IMA's Creative Coding Lab 
+
+Project A: Generative Creatures
+CCLaboratories Biodiversity Atlas 
+-->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Trinetic</title>
+
+    <!-- allow special characters, including Arabic, Chinese, Korean, Japanese, etc. -->
+    <meta charset="UTF-8">
+    <!-- link the style sheet -->
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <!-- import p5.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.11.3/lib/p5.min.js"></script>
+    <script>
+        // prevent scrolling when spacebar and arrow keys are pressed.
+        window.addEventListener("keydown", function (e) { if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) { e.preventDefault(); } }, false);
+    </script>
+</head>
+
+<body>
+    <!-- title -->
+    <div id="title-wrapper">
+        <h1 class="headline black">Trinetic</h1>
+    </div>
+
+    <!-- main content -->
+    <div id="main-wrapper">
+        <div id="p5-canvas-container">
+            <!-- This is where your p5 sketch will be appended and appear! -->
+        </div>
+        <div class="two-columns">
+            <div class="left">
+                <h3 class="red">Scientific Name:</h3>
+                <p>Magnetic Triangle</p>
+
+                <h3 class="red">Discovered by / at:</h3>
+                <p>Discovered Inside volcano magma cells</p>
+
+                <h3 class="green">Family:</h3>
+                <p>Unknown creature found in volcano lava cells</p>
+            </div>
+            <div class="right">
+                <h3 class="green">Habitat:</h3>
+                <p>Contained in an elastic bubble</p>
+
+                <h3 class="green">Appearance:</h3>
+                <p>Changing-Triangle with magnetic balls that circles around it</p>
+
+                <h3 class="green">Key Characteristics:</h3>
+                <ul>
+                    <li>Triangle, but never the same shape.</li>
+                    <li>Has balls protecting it, but the amount of balls varies.</li>
+                    <li>Tries to exit the bubble, but is protected by the bubble. If it escapes, it will die.</li>
+                    <li>Changes color to show that it is alerted.</li>
+                </ul>
+            </div>
+        </div>
+        <div class="one-column">
+            <p>
+                <span class="yellow">What we know so far about Trinetic?</span>
+                The creature does not like us being anywhere near it. It is always moving around and never stays still. It looks like it is trying to escape, but we don't know why it is trying to do that if it will die.
+                <br>
+                <span class="yellow">Guidelines for human interaction with this creature</span>Clicking anywhere around the creature will make the creature aggressively spin the balls faster, as a defense mechanism to protect it from being attacked. The amount of balls changes after every click. Hovering over the creature will change its color, most likely because it is alerted.
+            </p>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer" class="black">
+        <p>A CCLab project made by Jeffrey Isman in Spring 2026</p>
+    </div>
+
+    <!-- Home: Link back to the ATLAS page-->
+    <div id="home">
+        <a href="https://cclab.work/atlas">Back to the ATLAS</a>
+    </div>
+
+    <!-- Include your sketch.js file here -->
+    <script src="sketch.js" type="text/javascript"> </script>
+</body>
+
+</html>

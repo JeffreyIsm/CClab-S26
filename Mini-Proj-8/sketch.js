@@ -25,11 +25,11 @@ function draw() {
   ball.update();
   ball.display();
 
-  //robotGK.update(ball);
-  //robotGK.display();
+  robotGK.update(ball);
+  robotGK.display();
 
-  humanGK.update(ball);
-  humanGK.display();
+  //humanGK.update(ball);
+  //humanGK.display();
 }
 
 function keyPressed() {
@@ -66,6 +66,12 @@ class Ball {
     this.isMoving = true;
   }
 
+  display() {
+    fill(255);
+    strokeWeight(5);
+    circle(this.x, this.y, 50);
+  }
+
   update() {
     if (this.isMoving) {
       this.y -= this.speed;
@@ -84,12 +90,6 @@ class Ball {
       }
     }
   }
-
-  display() {
-    fill(255);
-    strokeWeight(5);
-    circle(this.x, this.y, 50);
-  }
 }
 
 class RobotGK {
@@ -97,6 +97,11 @@ class RobotGK {
     this.x = width / 2;
     this.y = 100;
     this.targetX = this.x;
+  }
+
+  display() {
+    imageMode(CENTER);
+    image(robotImg, this.x, this.y, 80, 80);
   }
 
   update(ball) {
@@ -108,11 +113,6 @@ class RobotGK {
       this.targetX = width / 2;
     }
     this.x = lerp(this.x, this.targetX, 0.2);
-  }
-
-  display() {
-    imageMode(CENTER);
-    image(robotImg, this.x, this.y, 80, 80);
   }
 }
 
@@ -149,5 +149,3 @@ class HumanGK {
     image(humanImg, this.x, this.y, 80, 80);
   }
 }
-
-// need to add save mechanism

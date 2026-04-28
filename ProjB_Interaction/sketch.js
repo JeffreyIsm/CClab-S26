@@ -30,17 +30,21 @@ function setup() {
 }
 
 function draw() {
+  if (mode === "human") {
+    humanEnv.display();
+  } else {
+    robotEnv.display();
+  }
+
   ball.update();
   ball.display();
 
   if (mode === "human") {
-    humanEnv.display();
     humanGK.update(ball);
     humanGK.display();
   } else {
     robotGK.update(ball);
     robotGK.display();
-    robotEnv.display();
   }
 }
 

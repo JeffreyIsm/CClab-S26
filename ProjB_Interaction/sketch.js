@@ -11,6 +11,8 @@ let goal;
 let mode = "human"; //"human" or "robot"
 let shotCount = 0;
 let maxShots = 5;
+let youScore = 0;
+let oppScore = 0;
 
 function preload() {
   robotImg = loadImage("assets/RobotGK.png");
@@ -32,20 +34,56 @@ function setup() {
 function draw() {
   if (mode === "human") {
     humanEnv.display();
+    humanGK.update(ball);
   } else {
     robotEnv.display();
+    robotGK.update(ball);
   }
 
   ball.update();
+  resolveShot();
   ball.display();
+  drawScoreboard();
 
   if (mode === "human") {
-    humanGK.update(ball);
     humanGK.display();
   } else {
-    robotGK.update(ball);
     robotGK.display();
   }
+}
+
+function resolveShot() {
+  if (ball.isMoving && ball.shotResolved == false && ball.y <= goal.bottomY) {
+    let keeperDirection;
+
+    if (mode === "human") {
+      keeperDirection = humanGK.direction;
+    } else {
+      keeperDirection = robotGK.direction;
+    }
+
+    if (ball.direction === keeperDirection) {
+      oppScore++;
+    } else {
+      youScore++;
+    }
+
+    ball.shotResolved = true;
+  }
+}
+
+function drawScoreboard() {
+  textAlign(CENTER, CENTER);
+
+  fill(255);
+  noStroke();
+  textSize(24);
+  text("YOU", width * 0.18, 45);
+  text("OPP", width * 0.82, 45);
+
+  textSize(36);
+  text(youScore, width * 0.18, 80);
+  text(oppScore, width * 0.82, 80);
 }
 
 function incrementShots() {
@@ -172,6 +210,7 @@ class Ball {
     this.direction = "center";
     this.speed = 10;
     this.isMoving = false;
+    this.shotResolved = false;
   }
 
   shoot(dir) {
@@ -179,6 +218,7 @@ class Ball {
     this.x = width / 2;
     this.y = height - 50;
     this.isMoving = true;
+    this.shotResolved = false;
   }
 
   display() {
@@ -202,6 +242,7 @@ class Ball {
         this.x = width / 2;
         this.y = height - 100;
         this.isMoving = false;
+        this.shotResolved = false;
       }
     }
   }
@@ -212,6 +253,7 @@ class RobotGK {
     this.x = width / 2;
     this.y = 150;
     this.targetX = this.x;
+    this.direction = "center";
   }
 
   display() {
@@ -222,10 +264,13 @@ class RobotGK {
   update(ball) {
     if (ball.direction === "left") {
       this.targetX = width * 0.35;
+      this.direction = "left";
     } else if (ball.direction === "right") {
       this.targetX = width * 0.65;
+      this.direction = "right";
     } else {
       this.targetX = width / 2;
+      this.direction = "center";
     }
     this.x = lerp(this.x, this.targetX, 0.2);
   }
@@ -236,6 +281,8 @@ class HumanGK {
     this.x = width / 2;
     this.y = 150;
     this.targetX = this.x;
+    this.direction = "center";
+    this.hasChosen = false;
   }
 
   update(ball) {
@@ -244,10 +291,13 @@ class HumanGK {
     if (ball.isMoving && this.hasChosen == false){
       if (choice === 0) {
         this.targetX = width * 0.35;
+        this.direction = "left";
       } else if (choice == 1) {
         this.targetX = width * 0.65;
+        this.direction = "right";
       } else {
         this.targetX = width / 2;
+        this.direction = "center";
       }
       this.hasChosen = true;
     }
@@ -264,3 +314,13 @@ class HumanGK {
     image(humanImg, this.x, this.y, 70, 70);
   }
 }
+
+/** 
+ * FEEDBACK
+ * give users guide on what keys to press, to clap
+ * make the ball look more like a ball
+ * scoreboard in both environments. in real world the score is more balanced, but in robot world its like 10-0\
+ * score can be on left  n right
+ * move the whole thing down abit
+ * draw the human, but shapes for robot
+ */

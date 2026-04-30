@@ -1,5 +1,11 @@
-let robotImg;
-let humanImg;
+let humanImgs = [];
+let robotImgs = [];
+let humanBallImg;
+let robotBallImg;
+
+let kickSound;
+let humanBG;
+let robotBG;
 
 let ball;
 let robotGK;
@@ -14,9 +20,26 @@ let maxShots = 5;
 let youScore = 0;
 let oppScore = 0;
 
+let mic;
+let clapThreshold = 0.9;
+let audioStarted = false;
+
 function preload() {
-  robotImg = loadImage("assets/RobotGK.png");
-  humanImg = loadImage("assets/HumanGK.png");
+  // 0 = left, 1 = center, 2 = right
+  humanImgs[0] = loadImage("assets/HumanGK_Left.png");
+  humanImgs[1] = loadImage("assets/HumanGK_Middle.png");
+  humanImgs[2] = loadImage("assets/HumanGK_Right.png");
+
+  robotImgs[0] = loadImage("assets/RobotGK_Left.png");
+  robotImgs[1] = loadImage("assets/RobotGK_Middle.png");
+  robotImgs[2] = loadImage("assets/RobotGK_Right.png");
+
+  humanBallImg = loadImage("assets/HumanBall.png");
+  robotBallImg = loadImage("assets/RobotBall.png");
+
+  kickSound = loadSound("assets/KickBall.mp3");
+  humanBG = loadSound("assets/HumanBG.mp3");
+  robotBG = loadSound("assets/RobotBG.mp3");
 }
 
 function setup() {
@@ -29,9 +52,25 @@ function setup() {
   goal = new Goal();
   humanEnv = new HumanEnvironment();
   robotEnv = new RobotEnvironment();
+
+  humanBG.setLoop(true);
+  robotBG.setLoop(true);
+  humanBG.setVolume(0.5);
+  robotBG.setVolume(0.5);
+  kickSound.setVolume(0.8);
+
+  mic = new p5.AudioIn();
+  mic.start();
 }
 
 function draw() {
+  let vol = mic.getLevel();
+  if (mode === "robot" && vol > clapThreshold) {
+    mode = "human";
+    robotBG.stop();
+    humanBG.loop();
+  }
+
   if (mode === "human") {
     humanEnv.display();
     humanGK.update(ball);
@@ -44,12 +83,19 @@ function draw() {
   resolveShot();
   ball.display();
   drawScoreboard();
+  drawControls();
 
   if (mode === "human") {
     humanGK.display();
   } else {
     robotGK.display();
   }
+}
+
+function dirToIndex(dir) {
+  if (dir === "left") return 0;
+  if (dir === "center") return 1;
+  return 2;
 }
 
 function resolveShot() {
@@ -72,18 +118,28 @@ function resolveShot() {
   }
 }
 
+function drawControls() {
+  textAlign(RIGHT, BOTTOM);
+  textSize(16);
+  fill(255);
+  noStroke();
+
+  let controlsText = "Controls:\n'W', 'A', 'D'\nClap your hands";
+  text(controlsText, width - 20, height - 20);
+}
+
 function drawScoreboard() {
   textAlign(CENTER, CENTER);
 
   fill(255);
   noStroke();
-  textSize(24);
-  text("YOU", width * 0.18, 45);
-  text("OPP", width * 0.82, 45);
+  textSize(40);
+  text("YOU", 145, 50);
+  text("OPP", 655, 50);
 
-  textSize(36);
-  text(youScore, width * 0.18, 80);
-  text(oppScore, width * 0.82, 80);
+  textSize(40);
+  text(youScore, 145, 100);
+  text(oppScore, 655, 100);
 }
 
 function incrementShots() {
@@ -93,26 +149,42 @@ function incrementShots() {
     if (shotCount >= maxShots) {
       mode = "robot";
       shotCount = 0;
+
+      humanBG.stop();
+      robotBG.loop();
     }
   }
 }
 
+function mousePressed() {
+  if (mode === "human" && !humanBG.isPlaying()) {
+    humanBG.loop();
+  }
+}
+
 function keyPressed() {
+  if (mode === "human" && !humanBG.isPlaying()) {
+    humanBG.loop();
+  }
+
   let k = key.toLowerCase();
 
   if (ball.isMoving == false){
     if (k === 'a' || keyCode === LEFT_ARROW) {
       ball.shoot("left");
+      kickSound.play();
       incrementShots();
     }
 
     if (k === 'w' || keyCode === UP_ARROW) {
       ball.shoot("center");
+      kickSound.play();
       incrementShots();
     }
 
     if (k === 'd' || keyCode === RIGHT_ARROW) {
       ball.shoot("right");
+      kickSound.play();
       incrementShots();
     }
   }
@@ -222,9 +294,16 @@ class Ball {
   }
 
   display() {
-    fill(255);
-    strokeWeight(5);
-    circle(this.x, this.y, 50);
+    imageMode(CENTER);
+
+    let img;
+    if (mode === "human") {
+      img = humanBallImg;
+    } else {
+      img = robotBallImg;
+    }
+
+    image(img, this.x, this.y, 140, 75);
   }
 
   update() {
@@ -258,7 +337,8 @@ class RobotGK {
 
   display() {
     imageMode(CENTER);
-    image(robotImg, this.x, this.y, 70, 70);
+    let img = robotImgs[dirToIndex(this.direction)];
+    image(img, this.x, this.y, 150, 100); 
   }
 
   update(ball) {
@@ -311,16 +391,7 @@ class HumanGK {
 
   display() {
     imageMode(CENTER);
-    image(humanImg, this.x, this.y, 70, 70);
+    let img = humanImgs[dirToIndex(this.direction)];
+    image(img, this.x, this.y, 100, 100);
   }
 }
-
-/** 
- * FEEDBACK
- * give users guide on what keys to press, to clap
- * make the ball look more like a ball
- * scoreboard in both environments. in real world the score is more balanced, but in robot world its like 10-0\
- * score can be on left  n right
- * move the whole thing down abit
- * draw the human, but shapes for robot
- */

@@ -395,3 +395,10 @@ class HumanGK {
     image(img, this.x, this.y, 100, 100);
   }
 }
+
+//Images:
+// - drawn by me
+// - AI generated with Gemini
+
+//Audios:
+// https://pixabay.com/sound-effects

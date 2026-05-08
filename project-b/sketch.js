@@ -169,7 +169,7 @@ function keyPressed() {
 
   let k = key.toLowerCase();
 
-  if (ball.isMoving == false){
+  if (ball.isMoving == false) {
     if (k === 'a' || keyCode === LEFT_ARROW) {
       ball.shoot("left");
       kickSound.play();
@@ -196,33 +196,37 @@ class HumanEnvironment {
 
   display() {
     background(135, 200, 255);
+
     this.drawGrass();
     goal.display(color(255));
   }
 
   drawGrass() {
     noStroke();
-    fill(70, 170, 70);
-    rect(0, 203, width, height - 200);
-
-    fill(40, 130, 40);
-    for (let x = 0; x < width; x += 20) {
-      for (let y = 210; y < height; y += 20) {
-        let offsetX = sin(frameCount * 0.05 + x * 0.1);
-        let offsetY = sin(frameCount * 0.08 + y * 0.1);
-        circle(x + offsetX, y + offsetY, 12);      
-      }
+    for (let x = 0; x < width; x += 10) {
+      let n = noise(x * 0.01, frameCount * 0.01);
+      fill(70 + n * 20, 170 + n * 10, 70);
+      rect(x, 203, 10, height - 200);
     }
-    fill(40, 160, 40);
+
     for (let x = 0; x < width; x += 20) {
       for (let y = 210; y < height; y += 20) {
-        let offsetX = sin(frameCount * 0.05 + x * 0.1);
-        let offsetY = sin(frameCount * 0.07 + y * 0.1);
-        circle(x + 10 + offsetX, y + 8 + offsetY, 12);      
+        let n = noise(x * 0.05, y * 0.05, frameCount * 0.02);
+        let offsetX = (n - 0.5) * 30;
+        let offsetY = (noise(y, x) - 0.5) * 15;
+
+        fill(40 + n * 30, 130 + n * 20, 40);
+        circle(x + offsetX, y + offsetY, 10 + n * 8);
+
+        stroke(30 + n * 20, 110, 30);
+        strokeWeight(1);
+        line(x + offsetX, y + offsetY, x + offsetX + (n - 0.5) * 10, y + offsetY - 5 - n * 5);
+        noStroke();
       }
     }
   }
 }
+
 
 class RobotEnvironment {
   constructor() {
@@ -316,8 +320,7 @@ class Ball {
         this.x += 4;
       }
 
-      // reset the ball back to position
-      if (this.y < 110){
+      if (this.y < 110) {
         this.x = width / 2;
         this.y = height - 100;
         this.isMoving = false;
@@ -338,7 +341,7 @@ class RobotGK {
   display() {
     imageMode(CENTER);
     let img = robotImgs[dirToIndex(this.direction)];
-    image(img, this.x, this.y, 150, 100); 
+    image(img, this.x, this.y, 150, 100);
   }
 
   update(ball) {
@@ -368,7 +371,7 @@ class HumanGK {
   update(ball) {
     let choice = floor(random(3));
 
-    if (ball.isMoving && this.hasChosen == false){
+    if (ball.isMoving && this.hasChosen == false) {
       if (choice === 0) {
         this.targetX = width * 0.35;
         this.direction = "left";
@@ -386,7 +389,7 @@ class HumanGK {
 
     if (ball.isMoving == false) {
       this.hasChosen = false;
-    }  
+    }
   }
 
   display() {
